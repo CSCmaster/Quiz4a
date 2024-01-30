@@ -1,0 +1,71 @@
+---
+title: "quiz 4a"
+format: pdf
+editor: visual
+---
+
+#Question2
+
+```{r, echo = False, message = False}
+ installed.packages() 
+ install.packages("testthat")
+ library(testthat) 
+ set.seed(123)
+
+num_friends <- 20
+
+true_heights <- rnorm(num_friends, mean = 170, sd = 10)
+
+error_edward <- rnorm(num_friends, mean = 0, sd = 5) 
+error_hugo <- rnorm(num_friends, mean = 0, sd = 8) 
+error_lucy <- rnorm(num_friends, mean = 0, sd = 7)
+
+observed_heights_edward <- true_heights + error_edward 
+observed_heights_hugo <- true_heights + error_hugo 
+observed_heights_lucy <- true_heights + error_lucy
+
+height_data <- data.frame( Friend = rep(c(rep("Edward", num_friends), rep("Hugo", num_friends), rep("Lucy", num_friends)), each = 1), True_Height = rep(true_heights, times = 3), Observed_Height = c(observed_heights_edward, observed_heights_hugo, observed_heights_lucy), Measurement_Approach = rep(c(rep("Edward", num_friends), rep("Hugo", num_friends), rep("Lucy", num_friends)), each = 1) )
+
+
+```
+
+```{r}
+ installed.packages() 
+ install.packages("testthat")
+ 
+ 
+ test_that("Test 1: Independence of Observed Heights for Edward", {
+  edward_data <- subset(height_data, Friend == "Edward")
+  chi_square_test_result <- chisq.test(table(edward_data$Observed_Height, edward_data$True_Height))
+  expect_true(chi_square_test_result$p.value > 0.05,
+              "Observed heights for Edward are independent of true heights.")
+})
+
+test_that("Test 2: Independence of Observed Heights for Hugo", {
+  hugo_data <- subset(height_data, Friend == "Hugo")
+  chi_square_test_result <- chisq.test(table(hugo_data$Observed_Height, hugo_data$True_Height))
+  expect_true(chi_square_test_result$p.value > 0.05,
+              "Observed heights for Hugo are independent of true heights.")
+})
+
+test_that("Test 3: Independence of Observed Heights for Lucy", {
+  lucy_data <- subset(height_data, Friend == "Lucy")
+  chi_square_test_result <- chisq.test(table(lucy_data$Observed_Height, lucy_data$True_Height))
+  expect_true(chi_square_test_result$p.value > 0.05,
+              "Observed heights for Lucy are independent of true heights.")
+})
+
+```
+
+```{r}
+
+
+library(ggplot2)
+
+plot_data <- data.frame( Friend = height_data$Friend,  Observed_Height = height_data$Observed_Height, True_Height = height_data$True_Height )
+
+ggplot(plot_data, aes(x = True_Height, y = Observed_Height, color = Friend)) + geom_point() + geom_line() + labs(title = "Observed vs. True Heights", x = "True Height", y = "Observed Height", color = "Friend") + theme_minimal()
+
+
+
+```
